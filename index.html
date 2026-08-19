@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fanya — Nairobi Gets It Done</title>
+<meta name="description" content="Movers, errand runners, riders and house scouts — request it, we dispatch it. Nairobi's on-demand fixer, live now.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#0B0C0E;
+    --card:#151614;
+    --card-2:#1B1C19;
+    --gold:#C9A24B;
+    --gold-bright:#E3C077;
+    --cream:#E8E3D8;
+    --cream-dim:#a8a397;
+    --bronze:#6B4F2A;
+    --line:#2E2A22;
+    --danger:#8B4A3C;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--cream);
+    font-family:'Inter', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .mono{font-family:'JetBrains Mono', monospace;}
+  a{color:inherit;}
+
+  ::selection{background:var(--gold); color:#0B0C0E;}
+  :focus-visible{outline:2px solid var(--gold-bright); outline-offset:3px;}
+
+  /* Background texture: faint route lines */
+  .grain{
+    position:fixed; inset:0; pointer-events:none; z-index:0; opacity:0.05;
+    background-image: radial-gradient(circle at 1px 1px, var(--cream) 1px, transparent 0);
+    background-size: 28px 28px;
+  }
+
+  header{
+    position:sticky; top:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 6vw;
+    background:rgba(11,12,14,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    font-family:'Fraunces', serif; font-weight:700; font-size:1.4rem;
+    letter-spacing:0.02em; color:var(--cream);
+  }
+  .logo span{color:var(--gold);}
+  .status-pill{
+    display:flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem;
+    color:var(--cream-dim); text-transform:uppercase; letter-spacing:0.08em;
+    border:1px solid var(--line); border-radius:999px; padding:6px 12px;
+  }
+  .dot{width:6px; height:6px; border-radius:50%; background:#7FA672; box-shadow:0 0 8px #7FA672; animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.4;}}
+
+  /* HERO */
+  .hero{
+    position:relative; z-index:1;
+    padding:9vh 6vw 7vh;
+    max-width:1100px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:0.78rem;
+    color:var(--gold); text-transform:uppercase; letter-spacing:0.15em;
+    margin-bottom:22px; display:block;
+  }
+  h1{
+    font-family:'Fraunces', serif; font-weight:600;
+    font-size:clamp(2.6rem, 7vw, 5.2rem);
+    line-height:0.98; letter-spacing:-0.01em;
+    color:var(--cream);
+  }
+  h1 em{
+    font-style:italic; color:var(--gold-bright); font-weight:500;
+  }
+  .hero-sub{
+    max-width:540px; margin-top:28px;
+    font-size:1.08rem; color:var(--cream-dim); font-weight:400;
+  }
+  .hero-actions{margin-top:40px; display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    font-family:'JetBrains Mono', monospace; font-size:0.85rem; font-weight:500;
+    padding:14px 26px; border-radius:2px; text-decoration:none;
+    letter-spacing:0.03em; transition:transform 0.15s ease, background 0.15s ease;
+    display:inline-block; cursor:pointer; border:none;
+  }
+  .btn-primary{background:var(--gold); color:#141310;}
+  .btn-primary:hover{background:var(--gold-bright); transform:translateY(-1px);}
+  .btn-ghost{border:1px solid var(--line); color:var(--cream); background:transparent;}
+  .btn-ghost:hover{border-color:var(--gold); color:var(--gold-bright);}
+
+  /* SERVICES — "The Board" */
+  .board{
+    position:relative; z-index:1;
+    padding:4vh 6vw 10vh;
+  }
+  .board-head{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom:1px solid var(--line); padding-bottom:18px; margin-bottom:8px;
+    flex-wrap:wrap; gap:12px;
+  }
+  .board-title{font-family:'Fraunces', serif; font-size:1.9rem; font-weight:600;}
+  .board-count{font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:var(--cream-dim);}
+
+  .service-row{
+    display:grid; grid-template-columns:80px 1fr auto;
+    align-items:center; gap:24px;
+    padding:28px 4px; border-bottom:1px solid var(--line);
+    cursor:pointer; transition:background 0.2s ease;
+  }
+  .service-row:hover{background:var(--card);}
+  .service-row:hover .row-arrow{transform:translateX(6px); color:var(--gold-bright);}
+  .row-code{font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--gold);}
+  .row-main h3{
+    font-family:'Fraunces', serif; font-size:clamp(1.4rem,3vw,2rem); font-weight:600;
+    margin-bottom:6px;
+  }
+  .row-main p{color:var(--cream-dim); font-size:0.92rem; max-width:520px;}
+  .row-arrow{
+    font-family:'JetBrains Mono', monospace; color:var(--cream-dim);
+    font-size:1.4rem; transition:all 0.2s ease;
+  }
+
+  /* REQUEST PANEL */
+  .panel-overlay{
+    position:fixed; inset:0; background:rgba(11,12,14,0.75);
+    backdrop-filter:blur(4px); z-index:100;
+    display:none; align-items:center; justify-content:center; padding:20px;
+  }
+  .panel-overlay.active{display:flex;}
+  .panel{
+    background:var(--card); border:1px solid var(--line);
+    max-width:520px; width:100%; max-height:88vh; overflow-y:auto;
+    padding:36px 32px; position:relative;
+  }
+  .panel-close{
+    position:absolute; top:20px; right:20px; background:none; border:none;
+    color:var(--cream-dim); font-size:1.4rem; cursor:pointer; line-height:1;
+  }
+  .panel-close:hover{color:var(--gold);}
+  .panel-code{font-family:'JetBrains Mono', monospace; color:var(--gold); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.1em;}
+  .panel h2{font-family:'Fraunces', serif; font-size:1.9rem; font-weight:600; margin:8px 0 4px;}
+  .panel-desc{color:var(--cream-dim); font-size:0.9rem; margin-bottom:26px;}
+
+  .field{margin-bottom:18px;}
+  .field label{
+    display:block; font-family:'JetBrains Mono', monospace; font-size:0.72rem;
+    text-transform:uppercase; letter-spacing:0.08em; color:var(--cream-dim); margin-bottom:8px;
+  }
+  .field input, .field textarea, .field select{
+    width:100%; background:var(--bg); border:1px solid var(--line);
+    color:var(--cream); padding:12px 14px; font-family:'Inter', sans-serif;
+    font-size:0.95rem; border-radius:2px;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{
+    border-color:var(--gold); outline:none;
+  }
+  .field textarea{resize:vertical; min-height:70px;}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+
+  .ticket-preview{
+    margin-top:24px; padding:16px; border:1px dashed var(--line);
+    font-family:'JetBrains Mono', monospace; font-size:0.78rem; color:var(--cream-dim);
+    background:var(--bg);
+  }
+  .ticket-preview .t-line{margin-bottom:4px;}
+  .ticket-preview .t-label{color:var(--bronze); text-transform:uppercase; font-size:0.68rem; margin-right:6px;}
+
+  .submit-btn{
+    width:100%; margin-top:20px; padding:15px; background:var(--gold);
+    color:#141310; border:none; font-family:'JetBrains Mono', monospace;
+    font-weight:600; font-size:0.9rem; letter-spacing:0.03em; cursor:pointer;
+    border-radius:2px; transition:background 0.15s ease;
+  }
+  .submit-btn:hover{background:var(--gold-bright);}
+  .submit-note{font-size:0.75rem; color:var(--cream-dim); margin-top:10px; text-align:center;}
+
+  /* DIRECTORY */
+  .dir-filters{display:flex; gap:10px; flex-wrap:wrap; margin:22px 0 28px;}
+  .filter-chip{
+    font-family:'JetBrains Mono', monospace; font-size:0.76rem; letter-spacing:0.04em;
+    background:transparent; border:1px solid var(--line); color:var(--cream-dim);
+    padding:8px 16px; border-radius:999px; cursor:pointer; transition:all 0.15s ease;
+  }
+  .filter-chip:hover{border-color:var(--gold);}
+  .filter-chip.active{background:var(--gold); border-color:var(--gold); color:#141310;}
+
+  .dir-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;}
+  .dir-card{
+    background:var(--card); border:1px solid var(--line); padding:22px;
+    transition:border-color 0.15s ease;
+  }
+  .dir-card:hover{border-color:var(--gold);}
+  .dir-card-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;}
+  .dir-card-name{font-family:'Fraunces', serif; font-size:1.2rem; font-weight:600;}
+  .dir-card-tag{
+    font-family:'JetBrains Mono', monospace; font-size:0.65rem; text-transform:uppercase;
+    color:var(--gold); border:1px solid var(--bronze); padding:3px 8px; letter-spacing:0.06em;
+  }
+  .dir-card-meta{font-size:0.85rem; color:var(--cream-dim); margin-bottom:4px;}
+  .dir-card-rate{font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--gold-bright); margin-top:10px;}
+  .dir-card-stars{font-size:0.78rem; color:var(--gold); margin-top:8px;}
+
+  .dir-empty{
+    padding:40px 0; text-align:center; color:var(--cream-dim); font-size:0.9rem;
+    border:1px dashed var(--line); margin-top:8px;
+  }
+
+  .dir-cta{
+    margin-top:36px; padding:26px; background:var(--card-2); border:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+  }
+  .dir-cta-title{font-family:'Fraunces', serif; font-size:1.15rem; font-weight:600;}
+  .dir-cta-sub{color:var(--cream-dim); font-size:0.85rem; margin-top:4px;}
+
+  /* TRUST STRIP */
+  .trust{
+    padding:6vh 6vw; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:32px;
+  }
+  .trust-item .num{font-family:'Fraunces', serif; font-size:2.2rem; color:var(--gold-bright); font-weight:600;}
+  .trust-item .lbl{font-family:'JetBrains Mono', monospace; font-size:0.72rem; color:var(--cream-dim); text-transform:uppercase; letter-spacing:0.08em; margin-top:4px;}
+
+  footer{
+    padding:6vh 6vw 4vh; text-align:center;
+    color:var(--cream-dim); font-size:0.82rem;
+  }
+  footer .foot-logo{font-family:'Fraunces', serif; color:var(--gold); font-size:1.1rem; margin-bottom:8px;}
+
+  @media (max-width:640px){
+    .service-row{grid-template-columns:1fr; gap:8px;}
+    .row-arrow{display:none;}
+    .field-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header>
+  <div class="logo">Fanya<span>.</span></div>
+  <div class="status-pill"><span class="dot"></span> Dispatch live · Nairobi</div>
+</header>
+
+<section class="hero">
+  <span class="eyebrow">Movers · Errands · Rides · House Scouts</span>
+  <h1>Say what you need.<br><em>Fanya</em> gets it done.</h1>
+  <p class="hero-sub">One request line for Nairobi's fixers — a mover with a pickup, a runner to beat the queue, a boda in ten minutes, or a scout who'll walk a house for you before you waste an afternoon.</p>
+  <div class="hero-actions">
+    <a href="#board" class="btn btn-primary">Make a request</a>
+    <a href="#directory" class="btn btn-ghost">Browse runners</a>
+  </div>
+</section>
+
+<section class="board" id="board">
+  <div class="board-head">
+    <div class="board-title">The Board</div>
+    <div class="board-count">04 services · tap to request</div>
+  </div>
+
+  <div class="service-row" onclick="openPanel('move')">
+    <div class="row-code">01</div>
+    <div class="row-main">
+      <h3>Move</h3>
+      <p>Boda, pickup or lorry — instant quote by load size, with packing help on request.</p>
+    </div>
+    <div class="row-arrow">→</div>
+  </div>
+
+  <div class="service-row" onclick="openPanel('errand')">
+    <div class="row-code">02</div>
+    <div class="row-main">
+      <h3>Errand</h3>
+      <p>Groceries, queue-standing, document pickup, bill payments — post it, a runner takes it.</p>
+    </div>
+    <div class="row-arrow">→</div>
+  </div>
+
+  <div class="service-row" onclick="openPanel('ride')">
+    <div class="row-code">03</div>
+    <div class="row-main">
+      <h3>Ride</h3>
+      <p>Boda or taxi, now or scheduled — set a recurring run for school, gym or market days.</p>
+    </div>
+    <div class="row-arrow">→</div>
+  </div>
+
+  <div class="service-row" onclick="openPanel('house')">
+    <div class="row-code">04</div>
+    <div class="row-main">
+      <h3>House Scout</h3>
+      <p>Send a runner to walk the property live on video before you commit to a viewing.</p>
+    </div>
+    <div class="row-arrow">→</div>
+  </div>
+</section>
+
+<section class="board" id="directory">
+  <div class="board-head">
+    <div class="board-title">The Directory</div>
+    <div class="board-count" id="dirCount">— runners vetted</div>
+  </div>
+
+  <div class="dir-filters" id="dirFilters">
+    <button class="filter-chip active" data-filter="all">All</button>
+    <button class="filter-chip" data-filter="move">Move</button>
+    <button class="filter-chip" data-filter="errand">Errand</button>
+    <button class="filter-chip" data-filter="ride">Ride</button>
+    <button class="filter-chip" data-filter="house">House Scout</button>
+  </div>
+
+  <div class="dir-grid" id="dirGrid"></div>
+
+  <div class="dir-empty" id="dirEmpty" style="display:none;">
+    No vetted runners in this category yet — requests are still dispatched manually, and it'll fill in fast.
+  </div>
+
+  <div class="dir-cta">
+    <div>
+      <div class="dir-cta-title">Do this for a living in Nairobi?</div>
+      <div class="dir-cta-sub">List yourself. We vet on WhatsApp before you go live.</div>
+    </div>
+    <button class="btn btn-primary" onclick="openJoinPanel()">List yourself →</button>
+  </div>
+</section>
+
+<section class="trust" id="trust">
+  <div class="trust-item">
+    <div class="num">01</div>
+    <div class="lbl">You post the request</div>
+  </div>
+  <div class="trust-item">
+    <div class="num">02</div>
+    <div class="lbl">We confirm on WhatsApp in minutes</div>
+  </div>
+  <div class="trust-item">
+    <div class="num">03</div>
+    <div class="lbl">A vetted runner is dispatched</div>
+  </div>
+  <div class="trust-item">
+    <div class="num">04</div>
+    <div class="lbl">You pay on completion, rate the job</div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-logo">Fanya</div>
+  <div>Nairobi · Requests routed by WhatsApp while the app builds. I create. I analyze. I lead. I build.</div>
+</footer>
+
+<!-- REQUEST PANEL -->
+<div class="panel-overlay" id="panelOverlay">
+  <div class="panel">
+    <button class="panel-close" onclick="closePanel()">&times;</button>
+    <div class="panel-code" id="panelCode">01 / MOVE</div>
+    <h2 id="panelTitle">Book a move</h2>
+    <p class="panel-desc" id="panelDesc">Tell us the load and route — we'll confirm a vehicle and price on WhatsApp.</p>
+
+    <form id="requestForm">
+      <div class="field">
+        <label>Your name</label>
+        <input type="text" id="f_name" placeholder="Full name" required>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Phone</label>
+          <input type="tel" id="f_phone" placeholder="07XX XXX XXX" required>
+        </div>
+        <div class="field">
+          <label id="f_dateLabel">Date needed</label>
+          <input type="date" id="f_date" required>
+        </div>
+      </div>
+
+      <!-- dynamic fields injected here -->
+      <div id="dynamicFields"></div>
+
+      <div class="field">
+        <label>Extra details</label>
+        <textarea id="f_notes" placeholder="Anything we should know — access, timing, special items..."></textarea>
+      </div>
+
+      <div class="ticket-preview" id="ticketPreview"></div>
+
+      <button type="submit" class="submit-btn">Send request on WhatsApp →</button>
+      <p class="submit-note">Opens WhatsApp with your request pre-filled — nothing is charged yet.</p>
+    </form>
+  </div>
+</div>
+
+<script>
+  // ⚠️ EDIT THIS: your WhatsApp number in international format, no + or spaces
+  const DISPATCH_NUMBER = "254700000000";
+
+  // ─────────────────────────────────────────────────────────
+  // THE DIRECTORY — this is your database for now.
+  // Every time you vet and approve someone on WhatsApp, add
+  // them here as one object, save, redeploy. Takes 30 seconds.
+  // category must be one of: "move" | "errand" | "ride" | "house"
+  // ─────────────────────────────────────────────────────────
+  const PROVIDERS = [
+    { name: "Kevo Motors", category: "move", area: "Kilimani / Lavington", meta: "Pickup + 2 helpers", rate: "From KES 2,500", phone: "254700000001", stars: "★★★★★" },
+    { name: "Achieng Errands", category: "errand", area: "CBD / Westlands", meta: "Queues, deliveries, payments", rate: "From KES 300", phone: "254700000002", stars: "★★★★☆" },
+    { name: "Boda Otis", category: "ride", area: "Ruaka / Runda", meta: "Fast, helmet always on", rate: "From KES 150", phone: "254700000003", stars: "★★★★★" },
+    { name: "Nyumba Scouts KE", category: "house", area: "Nairobi-wide", meta: "Live video walkthroughs", rate: "From KES 800", phone: "254700000004", stars: "★★★★☆" },
+  ];
+
+  function renderDirectory(filter){
+    const grid = document.getElementById('dirGrid');
+    const empty = document.getElementById('dirEmpty');
+    const list = filter === 'all' ? PROVIDERS : PROVIDERS.filter(p => p.category === filter);
+    document.getElementById('dirCount').textContent = `${PROVIDERS.length} runners vetted`;
+
+    if(list.length === 0){
+      grid.innerHTML = ''; empty.style.display = 'block'; return;
+    }
+    empty.style.display = 'none';
+    grid.innerHTML = list.map(p => `
+      <div class="dir-card">
+        <div class="dir-card-top">
+          <div class="dir-card-name">${p.name}</div>
+          <div class="dir-card-tag">${labelFor(p.category)}</div>
+        </div>
+        <div class="dir-card-meta">${p.area}</div>
+        <div class="dir-card-meta">${p.meta}</div>
+        <div class="dir-card-rate">${p.rate}</div>
+        <div class="dir-card-stars">${p.stars}</div>
+      </div>
+    `).join('');
+  }
+
+  function labelFor(cat){
+    return { move: "Move", errand: "Errand", ride: "Ride", house: "House Scout" }[cat] || cat;
+  }
+
+  document.getElementById('dirFilters').addEventListener('click', (e) => {
+    if(!e.target.classList.contains('filter-chip')) return;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    e.target.classList.add('active');
+    renderDirectory(e.target.dataset.filter);
+  });
+
+  renderDirectory('all');
+
+  // JOIN AS RUNNER
+  function openJoinPanel(){
+    document.getElementById('panelCode').textContent = "LIST YOURSELF";
+    document.getElementById('panelTitle').textContent = "Join the directory";
+    document.getElementById('panelDesc').textContent = "Tell us what you do. We vet every runner on WhatsApp before you go live to clients.";
+    document.getElementById('f_dateLabel').textContent = "Available from";
+    document.getElementById('dynamicFields').innerHTML = `
+      <div class="field">
+        <label>Service you offer</label>
+        <select id="f_from" required>
+          <option value="">Select...</option>
+          <option value="Move">Move — mover/driver</option>
+          <option value="Errand">Errand — runner</option>
+          <option value="Ride">Ride — boda/taxi</option>
+          <option value="House Scout">House Scout</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Areas you cover</label>
+        <input type="text" id="f_to" placeholder="e.g. Kilimani, Lavington, CBD" required>
+      </div>
+      <div class="field">
+        <label>Your rate</label>
+        <input type="text" id="f_load" placeholder="e.g. From KES 500" required>
+      </div>
+    `;
+    document.getElementById('requestForm').reset();
+    current = 'join';
+    overlay.classList.add('active');
+    updateTicket();
+  }
+
+  const services = {
+    move: {
+      code: "01 / MOVE",
+      title: "Book a move",
+      desc: "Tell us the load and route — we'll confirm a vehicle and price on WhatsApp.",
+      fields: `
+        <div class="field-row">
+          <div class="field"><label>Pickup location</label><input type="text" id="f_from" placeholder="e.g. Kilimani" required></div>
+          <div class="field"><label>Drop-off location</label><input type="text" id="f_to" placeholder="e.g. Ruaka" required></div>
+        </div>
+        <div class="field">
+          <label>Load size</label>
+          <select id="f_load" required>
+            <option value="">Select...</option>
+            <option>Single room / bachelor</option>
+            <option>1 bedroom</option>
+            <option>2-3 bedroom</option>
+            <option>Office / commercial</option>
+            <option>Few items (boda-size)</option>
+          </select>
+        </div>
+      `
+    },
+    errand: {
+      code: "02 / ERRAND",
+      title: "Post an errand",
+      desc: "Groceries, queues, deliveries, payments — describe the task and set your budget.",
+      fields: `
+        <div class="field">
+          <label>Task location(s)</label>
+          <input type="text" id="f_from" placeholder="Where does this happen?" required>
+        </div>
+        <div class="field">
+          <label>Budget (KES)</label>
+          <input type="text" id="f_load" placeholder="e.g. 500" required>
+        </div>
+      `
+    },
+    ride: {
+      code: "03 / RIDE",
+      title: "Request a ride",
+      desc: "Boda or taxi, one-off or recurring — we'll confirm pickup time on WhatsApp.",
+      fields: `
+        <div class="field-row">
+          <div class="field"><label>Pickup point</label><input type="text" id="f_from" placeholder="e.g. Westlands" required></div>
+          <div class="field"><label>Destination</label><input type="text" id="f_to" placeholder="e.g. CBD" required></div>
+        </div>
+        <div class="field">
+          <label>Ride type</label>
+          <select id="f_load" required>
+            <option value="">Select...</option>
+            <option>Boda — one-off</option>
+            <option>Taxi — one-off</option>
+            <option>Recurring — daily</option>
+            <option>Recurring — weekdays</option>
+          </select>
+        </div>
+      `
+    },
+    house: {
+      code: "04 / HOUSE SCOUT",
+      title: "Send a scout",
+      desc: "A runner walks the property on live video before you commit to viewing it yourself.",
+      fields: `
+        <div class="field">
+          <label>Property location / listing link</label>
+          <input type="text" id="f_from" placeholder="Estate, area, or listing URL" required>
+        </div>
+        <div class="field">
+          <label>Budget range (KES/month)</label>
+          <input type="text" id="f_load" placeholder="e.g. 25,000 - 35,000" required>
+        </div>
+      `
+    }
+  };
+
+  let current = "move";
+  const overlay = document.getElementById('panelOverlay');
+
+  function openPanel(key){
+    current = key;
+    const s = services[key];
+    document.getElementById('panelCode').textContent = s.code;
+    document.getElementById('panelTitle').textContent = s.title;
+    document.getElementById('panelDesc').textContent = s.desc;
+    document.getElementById('f_dateLabel').textContent = key === 'ride' ? 'Date/time needed' : 'Date needed';
+    document.getElementById('dynamicFields').innerHTML = s.fields;
+    document.getElementById('requestForm').reset();
+    overlay.classList.add('active');
+    updateTicket();
+    document.querySelectorAll('#requestForm input, #requestForm select, #requestForm textarea')
+      .forEach(el => el.addEventListener('input', updateTicket));
+  }
+
+  function closePanel(){ overlay.classList.remove('active'); }
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closePanel(); });
+
+  function val(id){ const el = document.getElementById(id); return el ? el.value : ''; }
+
+  function updateTicket(){
+    const title = current === 'join' ? 'Runner application' : services[current].title;
+    document.getElementById('ticketPreview').innerHTML = `
+      <div class="t-line"><span class="t-label">Service</span>${title}</div>
+      <div class="t-line"><span class="t-label">Name</span>${val('f_name') || '—'}</div>
+      <div class="t-line"><span class="t-label">Phone</span>${val('f_phone') || '—'}</div>
+      <div class="t-line"><span class="t-label">Route/Loc</span>${val('f_from') || '—'} ${val('f_to') ? '→ ' + val('f_to') : ''}</div>
+      <div class="t-line"><span class="t-label">Detail</span>${val('f_load') || '—'}</div>
+    `;
+  }
+
+  document.getElementById('requestForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const isJoin = current === 'join';
+    const title = isJoin ? 'New runner application' : services[current].title;
+    const lines = [
+      isJoin ? `*New Fanya runner application*` : `*New Fanya request — ${title}*`,
+      `Name: ${val('f_name')}`,
+      `Phone: ${val('f_phone')}`,
+      `Date: ${val('f_date')}`,
+      (val('f_from') || val('f_to')) ? `Route/Location: ${val('f_from')}${val('f_to') ? ' → ' + val('f_to') : ''}` : '',
+      val('f_load') ? `Detail: ${val('f_load')}` : '',
+      val('f_notes') ? `Notes: ${val('f_notes')}` : ''
+    ].filter(Boolean).join('\n');
+
+    const url = `https://wa.me/${DISPATCH_NUMBER}?text=${encodeURIComponent(lines)}`;
+    window.open(url, '_blank');
+  });
+</script>
+
+</body>
+</html>
