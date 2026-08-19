@@ -202,8 +202,14 @@
   .dir-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;}
   .dir-card{
     background:var(--card); border:1px solid var(--line); padding:22px;
-    transition:border-color 0.15s ease;
+    transition:border-color 0.15s ease; cursor:pointer;
   }
+  .dir-card-request{
+    font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:var(--gold);
+    text-transform:uppercase; letter-spacing:0.05em; margin-top:14px;
+    opacity:0; transition:opacity 0.15s ease;
+  }
+  .dir-card:hover .dir-card-request{opacity:1;}
   .dir-card:hover{border-color:var(--gold);}
   .dir-card-top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;}
   .dir-card-name{font-family:'Fraunces', serif; font-size:1.2rem; font-weight:600;}
@@ -430,8 +436,10 @@
       grid.innerHTML = ''; empty.style.display = 'block'; return;
     }
     empty.style.display = 'none';
-    grid.innerHTML = list.map(p => `
-      <div class="dir-card">
+    grid.innerHTML = list.map((p, i) => {
+      const idx = PROVIDERS.indexOf(p);
+      return `
+      <div class="dir-card" onclick="requestFromProvider(${idx})">
         <div class="dir-card-top">
           <div class="dir-card-name">${p.name}</div>
           <div class="dir-card-tag">${labelFor(p.category)}</div>
@@ -440,8 +448,10 @@
         <div class="dir-card-meta">${p.meta}</div>
         <div class="dir-card-rate">${p.rate}</div>
         <div class="dir-card-stars">${p.stars}</div>
+        <div class="dir-card-request">Request this runner →</div>
       </div>
-    `).join('');
+    `;
+    }).join('');
   }
 
   function labelFor(cat){
@@ -566,10 +576,12 @@
   };
 
   let current = "move";
+  let selectedProvider = null;
   const overlay = document.getElementById('panelOverlay');
 
   function openPanel(key){
     current = key;
+    selectedProvider = null;
     const s = services[key];
     document.getElementById('panelCode').textContent = s.code;
     document.getElementById('panelTitle').textContent = s.title;
@@ -583,6 +595,22 @@
       .forEach(el => el.addEventListener('input', updateTicket));
   }
 
+  // Opens the matching request panel pre-filled and tagged for a specific
+  // directory runner, so the request routes to you with their name attached.
+  function requestFromProvider(idx){
+    const p = PROVIDERS[idx];
+    if(!p) return;
+    openPanel(p.category);
+    selectedProvider = p;
+    document.getElementById('panelCode').textContent = `${services[p.category].code} · ${p.name.toUpperCase()}`;
+    document.getElementById('panelDesc').textContent = `Requesting ${p.name} directly (${p.area}). We'll confirm availability on WhatsApp.`;
+    setTimeout(() => {
+      const fromField = document.getElementById('f_from');
+      if(fromField) fromField.value = p.area;
+      updateTicket();
+    }, 0);
+  }
+
   function closePanel(){ overlay.classList.remove('active'); }
   overlay.addEventListener('click', (e) => { if(e.target === overlay) closePanel(); });
 
@@ -592,6 +620,7 @@
     const title = current === 'join' ? 'Runner application' : services[current].title;
     document.getElementById('ticketPreview').innerHTML = `
       <div class="t-line"><span class="t-label">Service</span>${title}</div>
+      ${selectedProvider ? `<div class="t-line"><span class="t-label">Runner</span>${selectedProvider.name}</div>` : ''}
       <div class="t-line"><span class="t-label">Name</span>${val('f_name') || '—'}</div>
       <div class="t-line"><span class="t-label">Phone</span>${val('f_phone') || '—'}</div>
       <div class="t-line"><span class="t-label">Route/Loc</span>${val('f_from') || '—'} ${val('f_to') ? '→ ' + val('f_to') : ''}</div>
@@ -605,6 +634,7 @@
     const title = isJoin ? 'New runner application' : services[current].title;
     const lines = [
       isJoin ? `*New Fanya runner application*` : `*New Fanya request — ${title}*`,
+      selectedProvider ? `Requested runner: ${selectedProvider.name} (${selectedProvider.area})` : '',
       `Name: ${val('f_name')}`,
       `Phone: ${val('f_phone')}`,
       `Date: ${val('f_date')}`,
