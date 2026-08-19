@@ -310,44 +310,10 @@
 <section class="board" id="board">
   <div class="board-head">
     <div class="board-title">The Board</div>
-    <div class="board-count">04 services · tap to request</div>
+    <div class="board-count" id="boardCount">— services · tap to request</div>
   </div>
 
-  <div class="service-row" onclick="openPanel('move')">
-    <div class="row-code">01</div>
-    <div class="row-main">
-      <h3>Move</h3>
-      <p>Boda, pickup or lorry — instant quote by load size, with packing help on request.</p>
-    </div>
-    <div class="row-arrow">→</div>
-  </div>
-
-  <div class="service-row" onclick="openPanel('errand')">
-    <div class="row-code">02</div>
-    <div class="row-main">
-      <h3>Errand</h3>
-      <p>Groceries, queue-standing, document pickup, bill payments — post it, a runner takes it.</p>
-    </div>
-    <div class="row-arrow">→</div>
-  </div>
-
-  <div class="service-row" onclick="openPanel('ride')">
-    <div class="row-code">03</div>
-    <div class="row-main">
-      <h3>Ride</h3>
-      <p>Boda or taxi, now or scheduled — set a recurring run for school, gym or market days.</p>
-    </div>
-    <div class="row-arrow">→</div>
-  </div>
-
-  <div class="service-row" onclick="openPanel('house')">
-    <div class="row-code">04</div>
-    <div class="row-main">
-      <h3>House Scout</h3>
-      <p>Send a runner to walk the property live on video before you commit to a viewing.</p>
-    </div>
-    <div class="row-arrow">→</div>
-  </div>
+  <div id="boardRows"></div>
 </section>
 
 <section class="board" id="directory">
@@ -357,13 +323,7 @@
   </div>
   <p class="dir-explainer"><span class="dir-explainer-badge">★ Endorsed</span> runners are paid members who've passed extra vetting — job history, references, and a direct check-in with our team. Standard listings are ID-verified but not badge-checked.</p>
 
-  <div class="dir-filters" id="dirFilters">
-    <button class="filter-chip active" data-filter="all">All</button>
-    <button class="filter-chip" data-filter="move">Move</button>
-    <button class="filter-chip" data-filter="errand">Errand</button>
-    <button class="filter-chip" data-filter="ride">Ride</button>
-    <button class="filter-chip" data-filter="house">House Scout</button>
-  </div>
+  <div class="dir-filters" id="dirFilters"></div>
 
   <div class="dir-grid" id="dirGrid"></div>
 
@@ -463,9 +423,9 @@
   //   link sharing on, Imgur, etc) and paste the direct image link here.
   //   Leave as an empty array [] if you don't have any yet.
   // ─────────────────────────────────────────────────────────
-  const PROVIDERS = [
-    { name: "The House Plug Ke", category: "move", area: "Kamakis / Wendani / Bypass", meta: "Customer satisfaction first", rate: "10% commission", phone: "254725482153", stars: "★★★★★", tier: "standard", jobsCompleted: 3, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
-    { name: "The House Plug Ke", category: "house", area: "Kamakis / Wendani / Bypass", meta: "Live videowalkthroughs", rate: "10% commission", phone: "254725482153", stars: "★★★★★", tier: "standard", jobsCompleted: 1, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
+  const PROVIDERS = [  
+    { name: "The House Plug Ke", category: "move", area: "Kamakis / Wendani / Bypass", meta: "Customer satisfaction first", rate: "10% commission", phone: "254725482153", stars: "★★★★★", tier: "standard", jobsCompleted: 0, social: "", gallery: [] },
+    { name: "The House Plug Ke", category: "house", area: "Kamakis / Wendani / Bypass", meta: "Live video walkthroughs", rate: "10% commission", phone: "254725482153", stars: "★★★★★", tier: "standard", jobsCompleted: 0, social: "", gallery: [] },
   ];
 
   function renderDirectory(filter){
@@ -505,18 +465,12 @@
     }).join('');
   }
 
-  function labelFor(cat){
-    return { move: "Move", errand: "Errand", ride: "Ride", house: "House Scout" }[cat] || cat;
-  }
-
   document.getElementById('dirFilters').addEventListener('click', (e) => {
     if(!e.target.classList.contains('filter-chip')) return;
     document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
     e.target.classList.add('active');
     renderDirectory(e.target.dataset.filter);
   });
-
-  renderDirectory('all');
 
   // JOIN AS RUNNER
   function openJoinPanel(){
@@ -529,10 +483,7 @@
         <label>Service you offer</label>
         <select id="f_from" required>
           <option value="">Select...</option>
-          <option value="Move">Move — mover/driver</option>
-          <option value="Errand">Errand — runner</option>
-          <option value="Ride">Ride — boda/taxi</option>
-          <option value="House Scout">House Scout</option>
+          ${SERVICES.map(s => `<option value="${s.boardTitle}">${s.boardTitle}</option>`).join('')}
         </select>
       </div>
       <div class="field">
@@ -550,11 +501,23 @@
     updateTicket();
   }
 
-  const services = {
-    move: {
-      code: "01 / MOVE",
-      title: "Book a move",
-      desc: "Tell us the load and route — we'll confirm a vehicle and price on WhatsApp.",
+  // ─────────────────────────────────────────────────────────
+  // SERVICES — the single source of truth for the whole app.
+  // Add a new service here and it automatically appears as a
+  // Board tile, a Directory filter chip, a request form, and an
+  // option in the "List yourself" runner signup — no HTML edits.
+  //   key         — short id, used everywhere internally (lowercase, no spaces)
+  //   boardTitle  — name shown on the Board tile and filter chip
+  //   boardDesc   — one-line description on the Board tile
+  //   panelDesc   — description shown inside the request form
+  //   fields      — the HTML for that service's specific form fields
+  // ─────────────────────────────────────────────────────────
+  const SERVICES = [
+    {
+      key: "move",
+      boardTitle: "Move",
+      boardDesc: "Boda, pickup or lorry — instant quote by load size, with packing help on request.",
+      panelDesc: "Tell us the load and route — we'll confirm a vehicle and price on WhatsApp.",
       fields: `
         <div class="field-row">
           <div class="field"><label>Pickup location</label><input type="text" id="f_from" placeholder="e.g. Kilimani" required></div>
@@ -573,10 +536,11 @@
         </div>
       `
     },
-    errand: {
-      code: "02 / ERRAND",
-      title: "Post an errand",
-      desc: "Groceries, queues, deliveries, payments — describe the task and set your budget.",
+    {
+      key: "errand",
+      boardTitle: "Errand",
+      boardDesc: "Groceries, queue-standing, document pickup, bill payments — post it, a runner takes it.",
+      panelDesc: "Groceries, queues, deliveries, payments — describe the task and set your budget.",
       fields: `
         <div class="field">
           <label>Task location(s)</label>
@@ -588,10 +552,11 @@
         </div>
       `
     },
-    ride: {
-      code: "03 / RIDE",
-      title: "Request a ride",
-      desc: "Boda or taxi, one-off or recurring — we'll confirm pickup time on WhatsApp.",
+    {
+      key: "ride",
+      boardTitle: "Ride",
+      boardDesc: "Boda or taxi, now or scheduled — set a recurring run for school, gym or market days.",
+      panelDesc: "Boda or taxi, one-off or recurring — we'll confirm pickup time on WhatsApp.",
       fields: `
         <div class="field-row">
           <div class="field"><label>Pickup point</label><input type="text" id="f_from" placeholder="e.g. Westlands" required></div>
@@ -609,10 +574,11 @@
         </div>
       `
     },
-    house: {
-      code: "04 / HOUSE SCOUT",
-      title: "Send a scout",
-      desc: "A runner walks the property on live video before you commit to viewing it yourself.",
+    {
+      key: "house",
+      boardTitle: "House Scout",
+      boardDesc: "Send a runner to walk the property live on video before you commit to a viewing.",
+      panelDesc: "A runner walks the property on live video before you commit to viewing it yourself.",
       fields: `
         <div class="field">
           <label>Property location / listing link</label>
@@ -623,8 +589,126 @@
           <input type="text" id="f_load" placeholder="e.g. 25,000 - 35,000" required>
         </div>
       `
+    },
+    {
+      key: "cleaning",
+      boardTitle: "Cleaning & Fumigation",
+      boardDesc: "Home and office cleaning, sanitation, and pest fumigation — booked and confirmed same day.",
+      panelDesc: "Tell us the space and service type — we'll confirm a team and price on WhatsApp.",
+      fields: `
+        <div class="field">
+          <label>Location</label>
+          <input type="text" id="f_from" placeholder="Estate / building" required>
+        </div>
+        <div class="field">
+          <label>Service needed</label>
+          <select id="f_load" required>
+            <option value="">Select...</option>
+            <option>General cleaning</option>
+            <option>Deep cleaning</option>
+            <option>Fumigation / pest control</option>
+            <option>Sanitation / disinfection</option>
+            <option>Office cleaning</option>
+          </select>
+        </div>
+      `
+    },
+    {
+      key: "beauty",
+      boardTitle: "Hair & Spa",
+      boardDesc: "Braiding, styling, massage and spa treatments — at home or at a partner salon.",
+      panelDesc: "Tell us what you're after — we'll match you with a stylist or spa and confirm on WhatsApp.",
+      fields: `
+        <div class="field">
+          <label>Location</label>
+          <input type="text" id="f_from" placeholder="Your area, or salon name" required>
+        </div>
+        <div class="field">
+          <label>Service needed</label>
+          <input type="text" id="f_load" placeholder="e.g. Braids, massage, facial" required>
+        </div>
+      `
+    },
+    {
+      key: "catering",
+      boardTitle: "Catering",
+      boardDesc: "Small gatherings to full events — menu, headcount, and delivery or on-site service.",
+      panelDesc: "Give us headcount and occasion — we'll match a caterer and confirm pricing on WhatsApp.",
+      fields: `
+        <div class="field-row">
+          <div class="field"><label>Location</label><input type="text" id="f_from" placeholder="Venue or delivery address" required></div>
+          <div class="field"><label>Guest count</label><input type="text" id="f_to" placeholder="e.g. 50" required></div>
+        </div>
+        <div class="field">
+          <label>Occasion / menu notes</label>
+          <input type="text" id="f_load" placeholder="e.g. Birthday, buffet style" required>
+        </div>
+      `
+    },
+    {
+      key: "events",
+      boardTitle: "Event Management & EmCee",
+      boardDesc: "Full event coordination or an MC for the day — weddings, corporate, parties.",
+      panelDesc: "Tell us the event and date — we'll match a planner or EmCee and confirm on WhatsApp.",
+      fields: `
+        <div class="field">
+          <label>Event location</label>
+          <input type="text" id="f_from" placeholder="Venue or area" required>
+        </div>
+        <div class="field">
+          <label>What you need</label>
+          <select id="f_load" required>
+            <option value="">Select...</option>
+            <option>Full event management</option>
+            <option>EmCee / MC only</option>
+            <option>Both</option>
+          </select>
+        </div>
+      `
     }
-  };
+  ];
+
+  // Lookup helper — turns SERVICES array into a { key: entry } object
+  // so existing code that does services['move'] keeps working.
+  const services = {};
+  SERVICES.forEach(s => {
+    services[s.key] = {
+      code: `${String(SERVICES.indexOf(s) + 1).padStart(2, '0')} / ${s.boardTitle.toUpperCase()}`,
+      title: s.panelDesc.split(' — ')[0].length < 40 ? s.boardTitle : s.boardTitle,
+      desc: s.panelDesc,
+      fields: s.fields
+    };
+  });
+
+  function labelFor(cat){
+    const s = SERVICES.find(s => s.key === cat);
+    return s ? s.boardTitle : cat;
+  }
+
+  function renderBoard(){
+    const rows = document.getElementById('boardRows');
+    document.getElementById('boardCount').textContent = `${String(SERVICES.length).padStart(2, '0')} services · tap to request`;
+    rows.innerHTML = SERVICES.map((s, i) => `
+      <div class="service-row" onclick="openPanel('${s.key}')">
+        <div class="row-code">${String(i + 1).padStart(2, '0')}</div>
+        <div class="row-main">
+          <h3>${s.boardTitle}</h3>
+          <p>${s.boardDesc}</p>
+        </div>
+        <div class="row-arrow">→</div>
+      </div>
+    `).join('');
+  }
+  renderBoard();
+
+  function renderFilters(){
+    const el = document.getElementById('dirFilters');
+    el.innerHTML = `<button class="filter-chip active" data-filter="all">All</button>` +
+      SERVICES.map(s => `<button class="filter-chip" data-filter="${s.key}">${s.boardTitle}</button>`).join('');
+  }
+  renderFilters();
+  renderDirectory('all');
+
 
   let current = "move";
   let selectedProvider = null;
