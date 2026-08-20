@@ -6,6 +6,15 @@
 <title>Fanya — Nairobi Gets It Done</title>
 <meta name="description" content="Movers, errand runners, riders and house scouts — request it, we dispatch it. Nairobi's on-demand fixer, live now.">
 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QSCH9Z63LW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QSCH9Z63LW');
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -409,99 +418,6 @@
   const DISPATCH_NUMBER = "254702808728";
 
   // ─────────────────────────────────────────────────────────
-  // THE DIRECTORY — this is your database for now.
-  // Every time you vet and approve someone on WhatsApp, add
-  // them here as one object, save, redeploy. Takes 30 seconds.
-  // category must be one of: "move" | "errand" | "ride" | "house"
-  // tier must be one of: "premium" | "standard"
-  //   premium = paid + extra vetting, endorsed badge, sorts to top
-  //   standard = default, no badge
-  // jobsCompleted: a number — shows "N jobs completed on Fanya"
-  // social: optional — e.g. "@theirhandle" or a full URL, shown as a link
-  // gallery: optional — array of image URLs (vehicle photos, listing
-  //   photos, etc). Upload images anywhere public (Google Drive with
-  //   link sharing on, Imgur, etc) and paste the direct image link here.
-  //   Leave as an empty array [] if you don't have any yet.
-  // ─────────────────────────────────────────────────────────
-  const PROVIDERS = [  
-    { name: "The House Plug Ke", category: "move", area: "Kamakis / Wendani / Bypass", meta: "Customer satisfaction first", rate: "10% commission", phone: "254725482153", stars: "★★★★★", tier: "premium", jobsCompleted: 13, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
-    { name: "The House Plug Ke", category: "house", area: "Kamakis / Wendani / Bypass", meta: "Live video walkthroughs", rate: "10% commission on deal", phone: "254725482153", stars: "★★★★★", tier: "standard", jobsCompleted: 2, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
-  ];
-
-  function renderDirectory(filter){
-    const grid = document.getElementById('dirGrid');
-    const empty = document.getElementById('dirEmpty');
-    let list = filter === 'all' ? PROVIDERS : PROVIDERS.filter(p => p.category === filter);
-    // Premium tier always sorts first within the current view
-    list = [...list].sort((a, b) => (a.tier === 'premium' ? -1 : 0) - (b.tier === 'premium' ? -1 : 0));
-    document.getElementById('dirCount').textContent = `${PROVIDERS.length} runners vetted`;
-
-    if(list.length === 0){
-      grid.innerHTML = ''; empty.style.display = 'block'; return;
-    }
-    empty.style.display = 'none';
-    grid.innerHTML = list.map((p) => {
-      const idx = PROVIDERS.indexOf(p);
-      const isPremium = p.tier === 'premium';
-      return `
-      <div class="dir-card ${isPremium ? 'dir-card-premium' : ''}" onclick="requestFromProvider(${idx})">
-        <div class="dir-card-top">
-          <div class="dir-card-name">${p.name}</div>
-          <div class="dir-card-tags">
-            ${isPremium ? '<div class="dir-card-badge">★ Endorsed</div>' : ''}
-            <div class="dir-card-tag">${labelFor(p.category)}</div>
-          </div>
-        </div>
-        <div class="dir-card-meta">${p.area}</div>
-        <div class="dir-card-meta">${p.meta}</div>
-        <div class="dir-card-rate">${p.rate}</div>
-        <div class="dir-card-stars">${p.stars}</div>
-        ${p.jobsCompleted ? `<div class="dir-card-jobs">${p.jobsCompleted} job${p.jobsCompleted === 1 ? '' : 's'} completed on Fanya</div>` : ''}
-        ${p.social ? `<a class="dir-card-social" href="${p.social.startsWith('http') ? p.social : '#'}" onclick="event.stopPropagation();" target="_blank" rel="noopener">${p.social}</a>` : ''}
-        ${p.gallery && p.gallery.length ? `<div class="dir-card-gallery" onclick="event.stopPropagation();">${p.gallery.map(src => `<img src="${src}" alt="${p.name} work sample" loading="lazy">`).join('')}</div>` : ''}
-        <div class="dir-card-request">Request this runner →</div>
-      </div>
-    `;
-    }).join('');
-  }
-
-  document.getElementById('dirFilters').addEventListener('click', (e) => {
-    if(!e.target.classList.contains('filter-chip')) return;
-    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-    e.target.classList.add('active');
-    renderDirectory(e.target.dataset.filter);
-  });
-
-  // JOIN AS RUNNER
-  function openJoinPanel(){
-    document.getElementById('panelCode').textContent = "LIST YOURSELF";
-    document.getElementById('panelTitle').textContent = "Join the directory";
-    document.getElementById('panelDesc').textContent = "Tell us what you do. We vet every runner on WhatsApp before you go live to clients.";
-    document.getElementById('f_dateLabel').textContent = "Available from";
-    document.getElementById('dynamicFields').innerHTML = `
-      <div class="field">
-        <label>Service you offer</label>
-        <select id="f_from" required>
-          <option value="">Select...</option>
-          ${SERVICES.map(s => `<option value="${s.boardTitle}">${s.boardTitle}</option>`).join('')}
-        </select>
-      </div>
-      <div class="field">
-        <label>Areas you cover</label>
-        <input type="text" id="f_to" placeholder="e.g. Kilimani, Lavington, CBD" required>
-      </div>
-      <div class="field">
-        <label>Your rate</label>
-        <input type="text" id="f_load" placeholder="e.g. From KES 500" required>
-      </div>
-    `;
-    document.getElementById('requestForm').reset();
-    current = 'join';
-    overlay.classList.add('active');
-    updateTicket();
-  }
-
-  // ─────────────────────────────────────────────────────────
   // SERVICES — the single source of truth for the whole app.
   // Add a new service here and it automatically appears as a
   // Board tile, a Directory filter chip, a request form, and an
@@ -674,7 +590,7 @@
   SERVICES.forEach(s => {
     services[s.key] = {
       code: `${String(SERVICES.indexOf(s) + 1).padStart(2, '0')} / ${s.boardTitle.toUpperCase()}`,
-      title: s.panelDesc.split(' — ')[0].length < 40 ? s.boardTitle : s.boardTitle,
+      title: s.boardTitle,
       desc: s.panelDesc,
       fields: s.fields
     };
@@ -683,6 +599,63 @@
   function labelFor(cat){
     const s = SERVICES.find(s => s.key === cat);
     return s ? s.boardTitle : cat;
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // THE DIRECTORY — this is your database for now.
+  // Every time you vet and approve someone on WhatsApp, add
+  // them here as one object, save, redeploy. Takes 30 seconds.
+  // category must match a "key" from SERVICES above
+  // tier must be one of: "premium" | "standard"
+  //   premium = paid + extra vetting, endorsed badge, sorts to top
+  //   standard = default, no badge
+  // jobsCompleted: a number — shows "N jobs completed on Fanya"
+  // social: optional — e.g. "@theirhandle" or a full URL, shown as a link
+  // gallery: optional — array of image URLs (vehicle photos, listing
+  //   photos, etc). Upload images anywhere public (Google Drive with
+  //   link sharing on, Imgur, etc) and paste the direct image link here.
+  //   Leave as an empty array [] if you don't have any yet.
+  // ─────────────────────────────────────────────────────────
+  const PROVIDERS = [
+    { name: "The House Plug Ke", category: "move", area: "Kamakis / Wendani / Bypass", meta: "Customer satisfaction first", rate: "10% commission", phone: "254725482153", stars: "★★★★★", tier: "premium", jobsCompleted: 13, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
+    { name: "The House Plug Ke", category: "house", area: "Kamakis / Wendani / Bypass", meta: "Live video walkthroughs", rate: "10% commission on deal", phone: "254725482153", stars: "★★★★★", tier: "standard", jobsCompleted: 2, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
+  ];
+
+  function renderDirectory(filter){
+    const grid = document.getElementById('dirGrid');
+    const empty = document.getElementById('dirEmpty');
+    let list = filter === 'all' ? PROVIDERS : PROVIDERS.filter(p => p.category === filter);
+    // Premium tier always sorts first within the current view
+    list = [...list].sort((a, b) => (a.tier === 'premium' ? -1 : 0) - (b.tier === 'premium' ? -1 : 0));
+    document.getElementById('dirCount').textContent = `${PROVIDERS.length} runners vetted`;
+
+    if(list.length === 0){
+      grid.innerHTML = ''; empty.style.display = 'block'; return;
+    }
+    empty.style.display = 'none';
+    grid.innerHTML = list.map((p) => {
+      const idx = PROVIDERS.indexOf(p);
+      const isPremium = p.tier === 'premium';
+      return `
+      <div class="dir-card ${isPremium ? 'dir-card-premium' : ''}" onclick="requestFromProvider(${idx})">
+        <div class="dir-card-top">
+          <div class="dir-card-name">${p.name}</div>
+          <div class="dir-card-tags">
+            ${isPremium ? '<div class="dir-card-badge">★ Endorsed</div>' : ''}
+            <div class="dir-card-tag">${labelFor(p.category)}</div>
+          </div>
+        </div>
+        <div class="dir-card-meta">${p.area}</div>
+        <div class="dir-card-meta">${p.meta}</div>
+        <div class="dir-card-rate">${p.rate}</div>
+        <div class="dir-card-stars">${p.stars}</div>
+        ${p.jobsCompleted ? `<div class="dir-card-jobs">${p.jobsCompleted} job${p.jobsCompleted === 1 ? '' : 's'} completed on Fanya</div>` : ''}
+        ${p.social ? `<a class="dir-card-social" href="${p.social.startsWith('http') ? p.social : '#'}" onclick="event.stopPropagation();" target="_blank" rel="noopener">${p.social}</a>` : ''}
+        ${p.gallery && p.gallery.length ? `<div class="dir-card-gallery" onclick="event.stopPropagation();">${p.gallery.map(src => `<img src="${src}" alt="${p.name} work sample" loading="lazy">`).join('')}</div>` : ''}
+        <div class="dir-card-request">Request this runner →</div>
+      </div>
+    `;
+    }).join('');
   }
 
   function renderBoard(){
@@ -699,16 +672,23 @@
       </div>
     `).join('');
   }
-  renderBoard();
 
   function renderFilters(){
     const el = document.getElementById('dirFilters');
     el.innerHTML = `<button class="filter-chip active" data-filter="all">All</button>` +
       SERVICES.map(s => `<button class="filter-chip" data-filter="${s.key}">${s.boardTitle}</button>`).join('');
   }
+
+  renderBoard();
   renderFilters();
   renderDirectory('all');
 
+  document.getElementById('dirFilters').addEventListener('click', (e) => {
+    if(!e.target.classList.contains('filter-chip')) return;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    e.target.classList.add('active');
+    renderDirectory(e.target.dataset.filter);
+  });
 
   let current = "move";
   let selectedProvider = null;
@@ -744,6 +724,36 @@
       if(fromField) fromField.value = p.area;
       updateTicket();
     }, 0);
+  }
+
+  // JOIN AS RUNNER
+  function openJoinPanel(){
+    document.getElementById('panelCode').textContent = "LIST YOURSELF";
+    document.getElementById('panelTitle').textContent = "Join the directory";
+    document.getElementById('panelDesc').textContent = "Tell us what you do. We vet every runner on WhatsApp before you go live to clients.";
+    document.getElementById('f_dateLabel').textContent = "Available from";
+    document.getElementById('dynamicFields').innerHTML = `
+      <div class="field">
+        <label>Service you offer</label>
+        <select id="f_from" required>
+          <option value="">Select...</option>
+          ${SERVICES.map(s => `<option value="${s.boardTitle}">${s.boardTitle}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label>Areas you cover</label>
+        <input type="text" id="f_to" placeholder="e.g. Kilimani, Lavington, CBD" required>
+      </div>
+      <div class="field">
+        <label>Your rate</label>
+        <input type="text" id="f_load" placeholder="e.g. From KES 500" required>
+      </div>
+    `;
+    document.getElementById('requestForm').reset();
+    current = 'join';
+    selectedProvider = null;
+    overlay.classList.add('active');
+    updateTicket();
   }
 
   function closePanel(){ overlay.classList.remove('active'); }
