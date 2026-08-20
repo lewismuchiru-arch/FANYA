@@ -198,6 +198,26 @@
   .submit-btn:hover{background:var(--gold-bright);}
   .submit-note{font-size:0.75rem; color:var(--cream-dim); margin-top:10px; text-align:center;}
 
+  .payment-disclosure{
+    margin-top:20px; padding:16px 18px; background:var(--bg);
+    border:1px solid var(--line); border-left:3px solid var(--gold);
+  }
+  .payment-disclosure-title{
+    font-family:'JetBrains Mono', monospace; font-size:0.72rem; text-transform:uppercase;
+    letter-spacing:0.06em; color:var(--gold); margin-bottom:8px;
+  }
+  .payment-disclosure p{
+    font-size:0.8rem; color:var(--cream-dim); line-height:1.6; margin-bottom:12px;
+  }
+  .payment-checkbox{
+    display:flex; align-items:flex-start; gap:10px; cursor:pointer;
+    font-size:0.82rem; color:var(--cream);
+  }
+  .payment-checkbox input{
+    margin-top:3px; width:16px; height:16px; accent-color:var(--gold);
+    flex-shrink:0; cursor:pointer;
+  }
+
   /* DIRECTORY */
   .dir-filters{display:flex; gap:10px; flex-wrap:wrap; margin:22px 0 28px;}
   .dir-explainer{
@@ -406,6 +426,15 @@
       </div>
 
       <div class="ticket-preview" id="ticketPreview"></div>
+
+      <div class="payment-disclosure" id="paymentDisclosure">
+        <div class="payment-disclosure-title">How payment works</div>
+        <p>Fanya does not process payment in-app. You pay the runner directly — cash or M-Pesa — once the job is confirmed and completed. Rates shown are starting estimates; the runner will confirm final pricing with you on WhatsApp before starting. Fanya is not liable for the quality of work or the conduct of independent runners.</p>
+        <label class="payment-checkbox">
+          <input type="checkbox" id="f_ackPayment" required>
+          <span>I understand and agree to these terms</span>
+        </label>
+      </div>
 
       <button type="submit" class="submit-btn">Send request on WhatsApp →</button>
       <p class="submit-note">Opens WhatsApp with your request pre-filled — nothing is charged yet.</p>
@@ -618,6 +647,7 @@
   // ─────────────────────────────────────────────────────────
   const PROVIDERS = [
     { name: "The House Plug Ke", category: "move", area: "Kamakis / Wendani / Bypass", meta: "Customer satisfaction first", rate: "10% commission", phone: "254725482153", stars: "★★★★★", tier: "premium", jobsCompleted: 13, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
+    { name: "Cheptoo Morag", category: "errand", area: "CBD, Gikomba, Eastleigh", meta: "Book early for errands outside CBD — clear logistics required", rate: "From KES 200", phone: "2547*5324100", stars: "★★★★★", tier: "premium", jobsCompleted: 0, social: "", gallery: [] },
     { name: "The House Plug Ke", category: "house", area: "Kamakis / Wendani / Bypass", meta: "Live video walkthroughs", rate: "10% commission on deal", phone: "254725482153", stars: "★★★★★", tier: "standard", jobsCompleted: 2, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
   ];
 
@@ -694,6 +724,14 @@
   let selectedProvider = null;
   const overlay = document.getElementById('panelOverlay');
 
+  function togglePaymentDisclosure(show){
+    const box = document.getElementById('paymentDisclosure');
+    const checkbox = document.getElementById('f_ackPayment');
+    box.style.display = show ? 'block' : 'none';
+    checkbox.required = show;
+    checkbox.checked = false;
+  }
+
   function openPanel(key){
     current = key;
     selectedProvider = null;
@@ -704,6 +742,7 @@
     document.getElementById('f_dateLabel').textContent = key === 'ride' ? 'Date/time needed' : 'Date needed';
     document.getElementById('dynamicFields').innerHTML = s.fields;
     document.getElementById('requestForm').reset();
+    togglePaymentDisclosure(true);
     overlay.classList.add('active');
     updateTicket();
     document.querySelectorAll('#requestForm input, #requestForm select, #requestForm textarea')
@@ -752,6 +791,7 @@
     document.getElementById('requestForm').reset();
     current = 'join';
     selectedProvider = null;
+    togglePaymentDisclosure(false);
     overlay.classList.add('active');
     updateTicket();
   }
