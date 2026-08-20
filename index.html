@@ -429,7 +429,8 @@
 
       <div class="payment-disclosure" id="paymentDisclosure">
         <div class="payment-disclosure-title">How payment works</div>
-        <p>Fanya does not process payment in-app. You pay the runner directly — cash or M-Pesa — once the job is confirmed and completed. Rates shown are starting estimates; the runner will confirm final pricing with you on WhatsApp before starting. Fanya is not liable for the quality of work or the conduct of independent runners.</p>
+        <p>All services attract a charge of <strong>KES 200</strong> per service. This is paid before you're connected to a runner — pay to M-Pesa Till Number <strong>9332515</strong> (Lewis Kanyiri Muchiru), then send your M-Pesa confirmation message on WhatsApp along with this request. Once payment is confirmed, we connect you with the runner directly.</p>
+        <p>Beyond that KES 200 connection fee, Fanya does not process job payment in-app — you pay the runner directly (cash or M-Pesa) once the job is confirmed and completed. Rates shown on runner listings are starting estimates; the runner will confirm final pricing with you before starting. Fanya is not liable for the quality of work or the conduct of independent runners.</p>
         <label class="payment-checkbox">
           <input type="checkbox" id="f_ackPayment" required>
           <span>I understand and agree to these terms</span>
@@ -647,7 +648,6 @@
   // ─────────────────────────────────────────────────────────
   const PROVIDERS = [
     { name: "The House Plug Ke", category: "move", area: "Kamakis / Wendani / Bypass", meta: "Customer satisfaction first", rate: "10% commission", phone: "254725482153", stars: "★★★★★", tier: "premium", jobsCompleted: 13, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
-    { name: "Cheptoo Morag", category: "errand", area: "CBD, Gikomba, Eastleigh", meta: "Book early for errands outside CBD — clear logistics required", rate: "From KES 200", phone: "2547*5324100", stars: "★★★★★", tier: "premium", jobsCompleted: 0, social: "", gallery: [] },
     { name: "The House Plug Ke", category: "house", area: "Kamakis / Wendani / Bypass", meta: "Live video walkthroughs", rate: "10% commission on deal", phone: "254725482153", stars: "★★★★★", tier: "standard", jobsCompleted: 2, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
   ];
 
@@ -680,7 +680,6 @@
         <div class="dir-card-rate">${p.rate}</div>
         <div class="dir-card-stars">${p.stars}</div>
         ${p.jobsCompleted ? `<div class="dir-card-jobs">${p.jobsCompleted} job${p.jobsCompleted === 1 ? '' : 's'} completed on Fanya</div>` : ''}
-        ${p.social ? `<a class="dir-card-social" href="${p.social.startsWith('http') ? p.social : '#'}" onclick="event.stopPropagation();" target="_blank" rel="noopener">${p.social}</a>` : ''}
         ${p.gallery && p.gallery.length ? `<div class="dir-card-gallery" onclick="event.stopPropagation();">${p.gallery.map(src => `<img src="${src}" alt="${p.name} work sample" loading="lazy">`).join('')}</div>` : ''}
         <div class="dir-card-request">Request this runner →</div>
       </div>
