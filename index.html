@@ -611,6 +611,50 @@
           </select>
         </div>
       `
+    },
+    {
+      key: "construction",
+      boardTitle: "Building Materials & Equipment",
+      boardDesc: "Trappers, tippers, concrete vibrators, scaffolding and site equipment — hired by the day or delivered to site.",
+      panelDesc: "Tell us the site and what you need — we'll confirm availability and pricing on WhatsApp.",
+      fields: `
+        <div class="field">
+          <label>Site location</label>
+          <input type="text" id="f_from" placeholder="Site address or area" required>
+        </div>
+        <div class="field">
+          <label>What you need</label>
+          <select id="f_load" required>
+            <option value="">Select...</option>
+            <option>Trapper</option>
+            <option>Tipper — sand/ballast/hardcore delivery</option>
+            <option>Concrete vibrator (poker vibrator)</option>
+            <option>Scaffolding hire</option>
+            <option>Multiple items</option>
+          </select>
+        </div>
+      `
+    },
+    {
+      key: "fitness",
+      boardTitle: "Fitness & Swimming Coach",
+      boardDesc: "Personal trainers and swimming coaches — one-off sessions or a standing weekly slot.",
+      panelDesc: "Tell us what you're after — we'll match you with a trainer or coach and confirm on WhatsApp.",
+      fields: `
+        <div class="field">
+          <label>Location</label>
+          <input type="text" id="f_from" placeholder="Your area, gym, or pool" required>
+        </div>
+        <div class="field">
+          <label>What you need</label>
+          <select id="f_load" required>
+            <option value="">Select...</option>
+            <option>Personal fitness training</option>
+            <option>Swimming coaching</option>
+            <option>Both</option>
+          </select>
+        </div>
+      `
     }
   ];
 
@@ -650,7 +694,7 @@
     { name: "The House Plug Ke", category: "move", area: "Kamakis / Wendani / Bypass", meta: "Customer satisfaction first", rate: "10% commission", phone: "254725482153", stars: "★★★★★", tier: "premium", jobsCompleted: 13, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
     { name: "The House Plug Ke", category: "house", area: "Kamakis / Wendani / Bypass", meta: "Live video walkthroughs", rate: "10% commission on deal", phone: "254725482153", stars: "★★★★★", tier: "standard", jobsCompleted: 2, social: "https://www.tiktok.com/@housesplug_ke?_r=1&_t=ZS-991dLqdIDyv", gallery: [] },
     { name: "Grace", category: "beauty", area: "Nairobi and environs", meta: "Massages, facials, mani/pedi, waxing, lashes, nails, dreadlocks, hair color, makeup, wig installs", rate: "Varies by service", phone: "254706588290", stars: "★★★★★", tier: "premium", jobsCompleted: 0, social: "", gallery: [] },
-    { name: "Cheptoo Morag", category: "errand", area: "CBD, Gikomba, Eastleigh", meta: "Book early for errands outside CBD — clear logistics required", rate: "From KES 200", phone: "254795*24100", stars: "★★★★★", tier: "premium", jobsCompleted: 0, social: "", gallery: [] },
+    { name: "Cheptoo Morag", category: "errand", area: "CBD, Gikomba, Eastleigh", meta: "Book early for errands outside CBD — clear logistics required", rate: "From KES 200", phone: "254795324100", stars: "★★★★★", tier: "premium", jobsCompleted: 0, social: "", gallery: [] },
   ];
 
   function renderDirectory(filter){
